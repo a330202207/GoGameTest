@@ -22,7 +22,7 @@ func main() {
 
 	for {
 		//调用写方法
-		_, err := conn.Write([]byte("Hello World!"))
+		_, err := conn.Write([]byte("Hello World!V0.1"))
 		if err != nil {
 			fmt.Println("Write conn Error", err)
 			return
@@ -38,7 +38,7 @@ func main() {
 		fmt.Printf("Server call back:%s, cnt = %d\n", buf, cnt)
 
 		//CPU阻塞
-		time.Sleep(1*time.Second)
+		time.Sleep(1 * time.Second)
 
 	}
 
