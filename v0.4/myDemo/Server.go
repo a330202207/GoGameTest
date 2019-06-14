@@ -40,7 +40,7 @@ func (this *PingRouter) PostHandle(request giface.IRequest) {
 
 func main() {
 	//创建server句柄,使用
-	s := gnet.NewServer("gInx V0.3")
+	s := gnet.NewServer("gInx V0.4")
 
 	//当前框架添加一个自定义router
 	s.AddRouter(&PingRouter{})

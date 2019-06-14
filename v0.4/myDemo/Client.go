@@ -22,7 +22,7 @@ func main() {
 
 	for {
 		//调用写方法
-		_, err := conn.Write([]byte("Hello World!V0.2"))
+		_, err := conn.Write([]byte("Hello World!V0.4"))
 		if err != nil {
 			fmt.Println("Write conn Error", err)
 			return

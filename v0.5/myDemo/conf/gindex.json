@@ -1,6 +1,6 @@
 {
   "Name": "gInxServerApp",
-  "TcpPort": 7777,
+  "TcpPort": 8999,
   "Host": "127.0.0.1",
   "MaxConn": 3,
   "MaxPackageSize": 4096
