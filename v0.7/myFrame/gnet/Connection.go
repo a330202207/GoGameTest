@@ -18,8 +18,11 @@ type Connection struct {
 	//当前的连接状态
 	isClosed bool
 
-	//告知当前链接已经退出的/停止 Channel
+	//告知当前链接已经退出的/停止 Channel(由Reader告知Writer退出)
 	ExitChan chan bool
+
+	//用于无缓冲的管道，用于读写Goroutine直接的消息通信
+	msgChan chan []byte
 
 	//消息的管理MsgID和对应的处理业务API关系
 	MsgHandler giface.IMsgHandler
@@ -27,8 +30,8 @@ type Connection struct {
 
 //链接的读业务
 func (c *Connection) StartReader() {
-	fmt.Println(" Reader Goroutine Is Running...")
-	defer fmt.Println("ConnID = ", c.ConnID, " Reader Is Exit, Remote Addr Is ", c.RemoteAddr().String())
+	fmt.Println(" [Reader Goroutine Is Running!]")
+	defer fmt.Println("[Reader Is Exit!], ConnID = ", c.ConnID, " Remote Addr Is ", c.RemoteAddr().String())
 	defer c.Stop()
 
 	for {
@@ -74,6 +77,27 @@ func (c *Connection) StartReader() {
 	}
 }
 
+//写消息Goroutine，专门发送给客户端消息的模块
+func (c *Connection) StartWriter() {
+	fmt.Println("[Writer Goroutine Is Running]")
+	defer fmt.Println("[Conn Writer Exit!]", c.RemoteAddr().String())
+
+	for {
+		select {
+		case data := <-c.msgChan:
+			//有数据要写给客户端
+			if _, err := c.Conn.Write(data); err != nil {
+				fmt.Println("Send Data Error,", err)
+				return
+			}
+		case <-c.ExitChan:
+			//代表Reader已经退出，此时Writer也要退出
+			return
+		}
+
+	}
+}
+
 //启动链接
 func (c *Connection) Start() {
 	fmt.Println("Conn Start... ConnID=", c.ConnID)
@@ -81,7 +105,8 @@ func (c *Connection) Start() {
 	//启动从当前链接的读数据的业务
 	go c.StartReader()
 
-	//TODO 启动从当前链接写数据的业务
+	//启动从当前链接写数据的业务
+	go c.StartWriter()
 
 }
 
@@ -99,8 +124,12 @@ func (c *Connection) Stop() {
 	//关闭socket
 	c.Conn.Close()
 
+	//告知Writer关闭
+	c.ExitChan <- true
+
 	//回收资源
 	close(c.ExitChan)
+	close(c.msgChan)
 }
 
 //获取当前的绑定socket、conn
@@ -133,11 +162,8 @@ func (c *Connection) SendMsg(MsgId uint32, data []byte) error {
 		return errors.New("Pack Error msg")
 	}
 
-	//将数据发送给客户端
-	if _, err := c.Conn.Write(binaryMsg); err != nil {
-		fmt.Println("Write Msg Id", MsgId, ",Error:", err)
-		return errors.New("Conn Write Error")
-	}
+	//将数据发送给Channel
+	c.msgChan <- binaryMsg
 
 	return nil
 }
@@ -150,6 +176,7 @@ func NewConnection(conn *net.TCPConn, ConnID uint32, msgHandler giface.IMsgHandl
 		MsgHandler: msgHandler,
 		isClosed:   false,
 		ExitChan:   make(chan bool, 1),
+		msgChan:    make(chan []byte),
 	}
 
 	return c
