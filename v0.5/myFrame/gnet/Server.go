@@ -26,7 +26,7 @@ type Server struct {
 
 //启动服务器
 func (s *Server) Start() {
-	fmt.Printf("[Ginx] Server Name :%s, listenner at ip :%s, Port:%d is staring",
+	fmt.Printf("[Ginx] Server Name :%s, listenner at ip :%s, Port:%d is staring\n",
 		utils.GlobalObject.Name, utils.GlobalObject.Host, utils.GlobalObject.TcpPort)
 	fmt.Printf("[Ginx] Version :%s, MaxConn:%d, MaxPackageSize:%d\n",
 		utils.GlobalObject.Version,

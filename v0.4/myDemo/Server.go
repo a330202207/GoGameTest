@@ -22,7 +22,7 @@ func (this *PingRouter) PreHandle(request giface.IRequest) {
 
 //Test Handle
 func (this *PingRouter) Handle(request giface.IRequest) {
-	fmt.Println("Call Router PreHandle")
+	fmt.Println("Call Router Handle")
 	_, err := request.GetConnection().GetTCPConnection().Write([]byte("ping...ping...ping...\n"))
 	if err != nil {
 		fmt.Println("Call Back Ping Error!")

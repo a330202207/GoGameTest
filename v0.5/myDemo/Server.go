@@ -13,7 +13,7 @@ type PingRouter struct {
 
 //Test Handle
 func (this *PingRouter) Handle(request giface.IRequest) {
-	fmt.Println("Call Router PreHandle")
+	fmt.Println("Call Router Handle")
 	//先读取客户端的数据，再会写ping...ping...ping
 	fmt.Println("Recv From Client:msgID=", request.GetMsgID(),
 		",Data=", string(request.GetData()))
