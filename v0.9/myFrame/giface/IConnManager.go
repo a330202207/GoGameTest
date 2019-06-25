@@ -2,7 +2,6 @@ package giface
 
 //定义一个链接管理接口
 type IConnManager interface {
-
 	//添加链接
 	Add(conn IConnection)
 

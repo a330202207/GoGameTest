@@ -25,6 +25,12 @@ type Server struct {
 
 	//该Server的链接管理器
 	ConnMgr giface.IConnManager
+
+	//该Server创建链接之后自动调用Hook函数
+	OnConnStart func(conn giface.IConnection)
+
+	//该Server销毁链接之前自动调用Hook函数
+	OnConnStop func(conn giface.IConnection)
 }
 
 //启动服务器
@@ -115,6 +121,32 @@ func (s *Server) AddRouter(MsgID uint32, router giface.IRouter) {
 //获取当前Server的链接管理器
 func (s *Server) GetConnMgr() giface.IConnManager {
 	return s.ConnMgr
+}
+
+//注册OnConnStart钩子方法
+func (s *Server) SetOnConnStart(hookFunc func(connection giface.IConnection)) {
+	s.OnConnStart = hookFunc
+}
+
+//注册OnConnStop钩子方法
+func (s *Server) SetOnConnStop(hookFunc func(connection giface.IConnection)) {
+	s.OnConnStop = hookFunc
+}
+
+//调用OnConnStart钩子方法
+func (s *Server) CallOnConnStart(conn giface.IConnection) {
+	if s.OnConnStop != nil {
+		fmt.Println("---------->Call OnConnStart()...")
+		s.OnConnStart(conn)
+	}
+}
+
+//调用OnConnStop钩子方法
+func (s *Server) CallOnConnStop(conn giface.IConnection) {
+	if s.OnConnStop != nil {
+		fmt.Println("---------->Call OnConnStop()...")
+		s.OnConnStop(conn)
+	}
 }
 
 //初始化

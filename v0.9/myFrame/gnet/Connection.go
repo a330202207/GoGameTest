@@ -119,6 +119,9 @@ func (c *Connection) Start() {
 	//启动从当前链接写数据的业务
 	go c.StartWriter()
 
+	//调用OnConnStart钩子方法
+	c.TCPServer.CallOnConnStart(c)
+
 }
 
 //停止链接
@@ -131,6 +134,9 @@ func (c *Connection) Stop() {
 	}
 
 	c.isClosed = true
+
+	//调用OnConnStop钩子方法
+	c.TCPServer.CallOnConnStop(c)
 
 	//关闭socket
 	c.Conn.Close()

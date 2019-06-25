@@ -7,8 +7,6 @@ import (
 	"testing"
 )
 
-//需要注释
-
 //负责测试DataPack拆包 封包的单元测试
 func TestDataPack(t *testing.T) {
 	//模拟的服务

@@ -28,6 +28,20 @@ type HelloGinxRouter struct {
 	gnet.BaseRouter
 }
 
+//创建链接之后执行的钩子函数
+func DoConnectionBegin(conn giface.IConnection) {
+	fmt.Println("======>DoConnectionBegin is Called...")
+	if err := conn.SendMsg(202, []byte("DoConnection BEGIN")); err != nil {
+		fmt.Println(err)
+	}
+}
+
+//链接断开之前的需要执行的函数
+func DoConnectionLost(conn giface.IConnection) {
+	fmt.Println("======>DoConnectionLost is Called...")
+	fmt.Println("Conn ID = ", conn.GetConnID(), " Is Lost...")
+}
+
 func (this *HelloGinxRouter) Handle(request giface.IRequest) {
 	fmt.Println("Call HelloGinxRouter Handle")
 	//先读取客户端的数据，再会写ping...ping...ping
@@ -42,7 +56,12 @@ func (this *HelloGinxRouter) Handle(request giface.IRequest) {
 
 func main() {
 	//创建server句柄,使用
-	s := gnet.NewServer("gInx V0.8")
+	s := gnet.NewServer("gInx V0.9")
+
+	//注册链接Hook钩子函数
+	s.SetOnConnStart(DoConnectionBegin)
+
+	s.SetOnConnStop(DoConnectionLost)
 
 	//当前框架添加自定义router
 	s.AddRouter(0, &PingRouter{})
