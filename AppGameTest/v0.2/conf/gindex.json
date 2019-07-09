@@ -1,0 +1,7 @@
+{
+  "Name": "MMO Game Ginx",
+  "TcpPort": 8999,
+  "Host": "0.0.0.0",
+  "MaxConn": 3000,
+  "WorkerPoolSize": 10
+}
