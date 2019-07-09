@@ -31,7 +31,7 @@ func OnConnectionAdd(conn giface.IConnection) {
 	fmt.Println("===============> Player Pid = ", player.Pid, " Is Arrived <===============")
 }
 
-//给当前链接断开之前除非的Hook钩子函数
+//给当前链接断开之前的Hook钩子函数
 func OnConnectionLost(conn giface.IConnection) {
 
 	//通过链接属性得到当前链接所绑定pid
@@ -52,11 +52,13 @@ func main() {
 
 	//连接创建和销毁的Hook钩子函数
 	s.SetOnConnStart(OnConnectionAdd)
+
 	s.SetOnConnStop(OnConnectionLost)
 
 	//注册一些路由业务
 	s.AddRouter(2, &apis.WorldChatApi{})
 
+	//移动
 	s.AddRouter(3, &apis.MoveAPi{})
 
 	//启动服务
